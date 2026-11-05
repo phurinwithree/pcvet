@@ -30,10 +30,20 @@
 
 ```powershell
 git clone https://github.com/phurinwithree/pcvet.git
+```
+```powershell
 cd pcvet
+```
+```powershell
 python -m venv .venv
+```
+```powershell
 .venv\Scripts\activate
+```
+```powershell
 pip install psutil
+```
+```powershell
 python pcvet.py
 ```
 > [!NOTE]
@@ -95,10 +105,20 @@ You need [Python](https://www.python.org/downloads/) 3.10 or newer and [Git](htt
 
 ```powershell
 git clone https://github.com/phurinwithree/pcvet.git
+```
+```powershell
 cd pcvet
+```
+```powershell
 python -m venv .venv
+```
+```powershell
 .venv\Scripts\activate
+```
+```powershell
 pip install psutil
+```
+```powershell
 python pcvet.py
 ```
 
