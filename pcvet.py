@@ -15,8 +15,21 @@ def decide_mood(cpu, disk, uptime_hours, ram): #สร้างฟังชั�
     else: #ถ้าไม่เข้าเงื่อนไขทั้งสี่ ก็ให้เป็นปกติ แทน normal
         return "normal"
 
-with open("skins/cat.json", encoding="utf-8") as f: #เปิดไฟล์สกินของเรา และให้อ่านด้วย UTF-8 กัน windows เอ๋อ และตั้งชื่อไฟล์ให้เป็น f
-    skin = json.load(f) #สร้างตัวแปร skin เพื่อให้อ่านไฟล์ json เก็บเป็น dict
+def load_skin(path): #สร้างฟังชั่น load_skin รับพารามิเตอร์ path
+    try:
+        with open(path, encoding="utf-8") as f: #เปิดไฟล์สกินของเรา และให้อ่านด้วย UTF-8 กัน windows เอ๋อ และตั้งชื่อไฟล์ให้เป็น f
+            return json.load(f)
+    except FileNotFoundError: #ถ้าหาไฟล์สกินไม่เจอก็ให้แสดงข้อความต่อไปนี้และย้อยกลับ None
+        print(f"Can't found the skin file: {path}")
+        return None
+    except json.JSONDecodeError as e: #ถ้ารูปแบบไฟล์ json ผิด ให้เป็น e และแสดงข้อความต่อไปนี้ พร้อมข้อความบอกรายละเอียดและย้อนกลับ None
+        print(f"Skin file is formatted incorrectly: {path}")
+        print(f"Details: {e}")
+        return None
+
+skin = load_skin("skins/cat.json") #สร้างตัวแปร skin มาเพื่อเรียกใช้ฟังชั่นโหลดสกินพร้อมบอก path ที่อยู่
+if skin is None: #ถ้า skin โหลดไม่สำเร็จ ให้จบโปรแกรมทันที
+    raise SystemExit(1)
 
 def draw_cat(mood): 
     return "\n".join(skin["faces"][mood]) #หยิบไฟล์สองชั้น คือ หน้าตา และชื่ออารมณ์ และเอาทุกบรรทัดมาต่อกันใหม่ ขึ้นบรรทัดด้วย /n 
