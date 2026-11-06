@@ -3,6 +3,8 @@ import time #เรียกใช้ ไลเบอรี่ time
 import os #เรียกใช้ ไลเบอรี่ os
 import json #เรียกใช้ ไลเบอรี่ json
 
+REQUIRED_MOODS = {"normal", "sweaty", "fat", "tired", "hungry"} # สร้าง set มาจัดเก็บชื่อของ อารมณ์ที่ต้องมี
+
 def decide_mood(cpu, disk, uptime_hours, ram): #สร้างฟังชั่นชื่อ decid_mood รับค่า พารามิเตอร์ของ cpu disk uptime_hours ram
     if cpu >= 80: #ถ้า cpu ใช้งานมากว่าหรือเท่ากับ 80% ให้เหงื่อออกแทน sweaty
         return "sweaty"
@@ -27,8 +29,16 @@ def load_skin(path): #สร้างฟังชั่น load_skin รับ�
         print(f"Details: {e}")
         return None
 
+def check_skin(skin):
+    missing = REQUIRED_MOODS - set(skin["faces"].keys()) #เช็คด้วยการ แปลงสกินให้เป็นเซตและ เอามาลบกันด้วยเซตที่มีอยู่ถ้าเหลือแสดงว่า อารมณ์ไม่ครบ
+    if missing: #ถ้าเซตที่ลบแล้วกลายเป็นเซตว่างให้แสดงข้อความ
+        print(f"Skin this missing mood: {', '.join(sorted(missing))}") #เรียงตามตัวอักษรให้อ่านง่ายและคั่นด้วย ","
+        return False
+    return True
+    #return True False บอกว่าสกินผ่านหรือไม่
+
 skin = load_skin("skins/cat.json") #สร้างตัวแปร skin มาเพื่อเรียกใช้ฟังชั่นโหลดสกินพร้อมบอก path ที่อยู่
-if skin is None: #ถ้า skin โหลดไม่สำเร็จ ให้จบโปรแกรมทันที
+if skin is None or not check_skin(skin): #ถ้า skin เป็น None โปรแกรมจบถ้าไม่เป็นก็วิ่งไปเช็คสกินต่อ
     raise SystemExit(1)
 
 def draw_cat(mood): 
