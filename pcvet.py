@@ -1,57 +1,25 @@
 import psutil #เรียกใช้ ไลเบอรี่ psutil
 import time #เรียกใช้ ไลเบอรี่ time
 import os #เรียกใช้ ไลเบอรี่ os
+import json #เรียกใช้ ไลเบอรี่ json
 
-def decide_mood(cpu, disk, uptime_hours, ram): #สร้างฟังชั่นชื่อ decid_mood รับค่า พารามิเตอร์ของ cpu disk
+def decide_mood(cpu, disk, uptime_hours, ram): #สร้างฟังชั่นชื่อ decid_mood รับค่า พารามิเตอร์ของ cpu disk uptime_hours ram
     if cpu >= 80: #ถ้า cpu ใช้งานมากว่าหรือเท่ากับ 80% ให้เหงื่อออกแทน sweaty
         return "sweaty"
     elif disk >= 90: #ถ้า disk ไดรฟ์ C ใช้งานมากกว่าหรือเท่ากับ 90% ให้แสดง fat
         return "fat"
-    elif ram >= 85:
+    elif ram >= 85: #ถ้า ram ใช้งานเกินหรือมากกว่า 85% ให้แสดงสถานะ hungry
         return "hungry"
     elif uptime_hours >= 6: #ถ้าเปิดเครื่องมานานกว่าหรือเท่ากับ 6 ชั่วโมง ให้แสดง tired
         return "tired"
-    else: #ถ้าไม่เข้าเงื่อนไขทั้งสอง ก็ให้เป็นปกติ แทน normal
+    else: #ถ้าไม่เข้าเงื่อนไขทั้งสี่ ก็ให้เป็นปกติ แทน normal
         return "normal"
 
-CATS = { #สร้าง dict เพื่อจัดเก็บรูปภาพของน้องแมว
-    "normal": r"""
-        /\_/\
-       (^ . ^)
-       >  ^  <
-          n 
-    """,
-    "sweaty": r"""
-       ~/\_/\~
-       (> . <)
-       >  ~  <
-          s 
-    """,
-    "fat": r"""
-        //\_/\\
-        ( -.- )
-       ((  0  ))
-           f
-     """,
-    "tired": r"""
-        /\_/\   z
-       ( -.- )z
-       >  z  <
-          t 
+with open("skins/cat.json", encoding="utf-8") as f: #เปิดไฟล์สกินของเรา และให้อ่านด้วย UTF-8 กัน windows เอ๋อ และตั้งชื่อไฟล์ให้เป็น f
+    skin = json.load(f) #สร้างตัวแปร skin เพื่อให้อ่านไฟล์ json เก็บเป็น dict
 
-    """,
-    "hungry": r"""
-        /\_/\
-       (o . o)
-       > ~~~ <
-          h
-    
-    """
-    
-}
-
-def draw_cat(mood): #กำหนดฟังชั่น เรียกใช้ mood ตามชื่อใน dict 
-    return CATS[mood] #แล้วคืนค่านั้นไปที่ mood 
+def draw_cat(mood): 
+    return "\n".join(skin["faces"][mood]) #หยิบไฟล์สองชั้น คือ หน้าตา และชื่ออารมณ์ และเอาทุกบรรทัดมาต่อกันใหม่ ขึ้นบรรทัดด้วย /n 
 
 try:
     while True: #สร้าง loop ที่เช็คเงื่อนไขว่าเป็นจริงไหม และทำซ้ำทุกรอบเมื่อเงื่อนไขเป็นจริง
@@ -64,8 +32,8 @@ try:
         os.system("cls") #สั่งให้เคลียร์ clear เอง
 
         # _U ย่อมาจาก USE
-        print(f"Cpu_U: {cpu:.2f} %") #ใช้ f หน้าเครื่องหมายคำพูดแสดงค่า Cpu_U เป็นทศนิยมผ่าน :.2f หมายถึงเอาแค่ 2 หลักและตามด้วย % ธรรมดา
-        print(f"Disk_U: {disk:.2f} %") #ใช้ f หน้าเครื่องหมายคำพูดแสดงค่า Disk_U เป็นทศนิยมผ่าน :.2f หมายถึงเอาแค่ 2 หลักและตามด้วย % ธรรมดา
+        print(f"Cpu_U: {cpu:.2f} %") #ใช้ f หน้าเครื่องหมายคำพูดแสดงค่า Cpu_U เป็นทศนิยมผ่าน :.2f หมายถึงเอาแค่ 2 ตำแหน่งและตามด้วย % ธรรมดา
+        print(f"Disk_U: {disk:.2f} %") #ใช้ f หน้าเครื่องหมายคำพูดแสดงค่า Disk_U เป็นทศนิยมผ่าน :.2f หมายถึงเอาแค่ 2 ตำแหน่งและตามด้วย % ธรรมดา
         print(f"Ram_U: {ram:.2f} %")
         print(f"Uptime:{uptime_hours:.2f} hours") #แสดงค่าการทำงานของ เครื่องนับตั้งแต่เครื่องเปิดใช้งานหน่วยเป็น ชั่วโมง
         print("Mood:", mood) #แสดงผลหน้าตาตามฟังชั่น
