@@ -63,6 +63,20 @@ if skin is None or not check_skin(skin): #ถ้า skin เป็น None โ�
 def draw_cat(mood): 
     return "\n".join(skin["faces"][mood]) #หยิบไฟล์สองชั้น คือ หน้าตา และชื่ออารมณ์ และเอาทุกบรรทัดมาต่อกันใหม่ ขึ้นบรรทัดด้วย /n 
 
+def show_log(file_no=0, lines=LOG_DEFAULT_LINES): #สร้างฟังชั่น show_log เก็บพารามิเตอร์ เป็น ชื่อไฟล์ นะที่นี้คือ 0 คือไฟล์เริ่มต้น และจำนวนบรรทัด นะที่นี้คือเริ่มต้น 10 
+    if file_no == 0: #ถ้า ชื่อไฟล์ = 0 หรือไม่ได้กรอก ก็คือไปเอา path ตาม log ธรรมดา pcvet.log 
+        path = LOG_FILD
+    else: # แต่ถ้าไม่ก็ดู เช่น 1 2 3 ไปเอาค่า .1 .2 .3 ตามค่า log มา
+        path = f"{LOG_FILD}.{file_no}"
+
+    try:
+        with open(path, encoding="utf-8") as f: #อ่านค่าไฟล์ log โดยใช้ encoding utf-8 
+            all_lines = f.readlines()
+    except FileNotFoundError: #ถ้าหาไฟล์ไม่เจอ ก็ให้คืนค่าเป้นไม่มีอะไรนั้นแหละ
+        return None
+
+    return all_lines[-lines:] #หยิบไฟล์ตามบรรทัดที่ขอ ถ้ามีเท่าไหร่ก็เอาตามนั้น ถ้ามีน้อยกว่าที่ขอก็ส่งไปหมด ถ้ามีเกินก็ส่งตามค่าเริ่มต้น ณ ที่นี้คือ 10 บรรทัด
+
 
 logger.info("Program starts running.") #ถ้าผู้ใช้เริ่มโปรแกรมให้จดลง log
 last_mood = None #สร้างตัวแปรมาเพื่อ เก็บค่าของ mood ล่าสุดที่แสดง
