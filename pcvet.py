@@ -6,9 +6,10 @@ import logging #เรียกใช้ ไลเบอรี่ logging
 from logging.handlers import RotatingFileHandler
 
 REQUIRED_MOODS = {"normal", "sweaty", "fat", "tired", "hungry"} # สร้าง set มาจัดเก็บชื่อของ อารมณ์ที่ต้องมี
+LOG_FILD = "pcvet.log" #สร้างไฟล์คงที่เพื่อให้เวลาเรียกใช้ pcvet.log จะได้แก้ทีเดียว
 
 handler = RotatingFileHandler( #สร้าง handler ไฟล์ pcvet เก็บค่า log และหมุนไฟล์ให้เองเรื่อยๆ
-    "pcvet.log",
+    LOG_FILD,
     maxBytes=500_000, #ไฟล์ละสูงสุด 500KB 
     backupCount=3, #สร้างสูงสุด 3 ไฟล์
     encoding="utf-8", #รูปแบบ UTF-8
