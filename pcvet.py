@@ -9,11 +9,12 @@ REQUIRED_MOODS = {"normal", "sweaty", "fat", "tired", "hungry"} # สร้า�
 LOG_FILD = "pcvet.log" #สร้างไฟล์คงที่เพื่อให้เวลาเรียกใช้ pcvet.log จะได้แก้ทีเดียว
 LOG_DEFAULT_LINES = 10 #เพดานจำนวน log ที่ผู้ใช้ทำคำสั่งแบบไม่ระบุจำนวนบรรทัด 10 บรรทัด
 LOG_MAX_LINES = 200 #เพดานจำนวน log สูงสุดเมื่อผู้ใช้ระบบจำนวนบรรทัดห้ามเกินนี้ 200 บรรทัด
+LOG_BACKUP_COUNT = 3 #กำหนดว่า ให้สร้างไฟล์ LOG มากสุดคือ 3 ไฟล์ย้อนหลัง
 
 handler = RotatingFileHandler( #สร้าง handler ไฟล์ pcvet เก็บค่า log และหมุนไฟล์ให้เองเรื่อยๆ
     LOG_FILD,
     maxBytes=500_000, #ไฟล์ละสูงสุด 500KB 
-    backupCount=3, #สร้างสูงสุด 3 ไฟล์
+    backupCount=LOG_BACKUP_COUNT, #สร้างสูงสุด 3 ไฟล์
     encoding="utf-8", #รูปแบบ UTF-8
 )
 handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s")) #ตั้ง format ว่าจะเก็บหน้าตาแบบไหนในที่นี้คือ เวลา เลเวล และ ข้อความ
@@ -77,6 +78,35 @@ def show_log(file_no=0, lines=LOG_DEFAULT_LINES): #สร้างฟังช�
 
     return all_lines[-lines:] #หยิบไฟล์ตามบรรทัดที่ขอ ถ้ามีเท่าไหร่ก็เอาตามนั้น ถ้ามีน้อยกว่าที่ขอก็ส่งไปหมด ถ้ามีเกินก็ส่งตามค่าเริ่มต้น ณ ที่นี้คือ 10 บรรทัด
 
+def parse_log_args(args): #สร้างฟังชั่น parse_log_args มีค่าพารามิเตอร์เป็น args
+    file_no = 0 #ไฟล์ตอนนี้คือไฟล์เริ่มต้น pcvet.log
+    lines = LOG_DEFAULT_LINES #จำนวนบรรทัดก็ใช้ค่าเริ่มต้น
+    was_capped = False
+
+    i = 0 
+    while i < len(args): #เช็คจำนวนสมาชิกใน args เริ่มจาก 0 1 2 ตามลำดับ
+        if args[i] == "--lines": #หยิบคำที่ i ชิ้อยู่แล้วถามว่าคือ --lines ไหม
+            if i + 1 >= len(args): #ถามว่าคำถัดไปมีอยู่จริงไหม
+                raise ValueError("--lines Must be followed by a number, for example: --lines 50") #ถ้าผู้ใช้ กรอก --lines abc ให้ฟ้องกลับว่า ต้องกรอกตามหลังด้วยตัวเลขเท่านั้น
+            try:
+                lines = int(args[i + 1])
+            except ValueError:
+                raise ValueError(f"Number of lines must be a numeric value: {args[i + 1]}") #จำนวนบรรทัดก็เหมือนกัน
+            i += 2
+        else:
+            try:
+                file_no = int(args[i])
+            except ValueError:
+                raise ValueError(f"do not know: {args[i]}")
+            i += 1
+
+        if lines < 1:
+            raise ValueError("Number of lines must be 1 or greater.")
+        if file_no < 0 or file_no > LOG_BACKUP_COUNT:
+            raise ValueError(f"File number must be between 0 and {LOG_BACKUP_COUNT}")
+                   
+
+    return file_no, lines, was_capped #ส่งตัวแปรทั้งสามกลับไปในชุดเดียว 
 
 logger.info("Program starts running.") #ถ้าผู้ใช้เริ่มโปรแกรมให้จดลง log
 last_mood = None #สร้างตัวแปรมาเพื่อ เก็บค่าของ mood ล่าสุดที่แสดง
