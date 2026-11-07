@@ -6,13 +6,13 @@ import logging #เรียกใช้ ไลเบอรี่ logging
 from logging.handlers import RotatingFileHandler
 
 REQUIRED_MOODS = {"normal", "sweaty", "fat", "tired", "hungry"} # สร้าง set มาจัดเก็บชื่อของ อารมณ์ที่ต้องมี
-LOG_FILD = "pcvet.log" #สร้างไฟล์คงที่เพื่อให้เวลาเรียกใช้ pcvet.log จะได้แก้ทีเดียว
+LOG_FILE = "pcvet.log" #สร้างไฟล์คงที่เพื่อให้เวลาเรียกใช้ pcvet.log จะได้แก้ทีเดียว
 LOG_DEFAULT_LINES = 10 #เพดานจำนวน log ที่ผู้ใช้ทำคำสั่งแบบไม่ระบุจำนวนบรรทัด 10 บรรทัด
 LOG_MAX_LINES = 200 #เพดานจำนวน log สูงสุดเมื่อผู้ใช้ระบบจำนวนบรรทัดห้ามเกินนี้ 200 บรรทัด
 LOG_BACKUP_COUNT = 3 #กำหนดว่า ให้สร้างไฟล์ LOG มากสุดคือ 3 ไฟล์ย้อนหลัง
 
 handler = RotatingFileHandler( #สร้าง handler ไฟล์ pcvet เก็บค่า log และหมุนไฟล์ให้เองเรื่อยๆ
-    LOG_FILD,
+    LOG_FILE,
     maxBytes=500_000, #ไฟล์ละสูงสุด 500KB 
     backupCount=LOG_BACKUP_COUNT, #สร้างสูงสุด 3 ไฟล์
     encoding="utf-8", #รูปแบบ UTF-8
@@ -44,7 +44,7 @@ def load_skin(path): #สร้างฟังชั่น load_skin รับ�
         print(f"Can't found the skin file: {path}")
         return None
     except json.JSONDecodeError as e: #ถ้ารูปแบบไฟล์ json ผิด ให้เป็น e และแสดงข้อความต่อไปนี้ พร้อมข้อความบอกรายละเอียดและย้อนกลับ None
-        logger.error("Can't found the skin file: %s", path, e) #ให้ logger เป็นคนเอาค่าไปแทนที่เอง
+        logger.error("Skin file is formatted incorrectly: %s (%s)", path, e) #ให้ logger เป็นคนเอาค่าไปแทนที่เอง
         print(f"Skin file is formatted incorrectly: {path}")
         print(f"Details: {e}")
         return None
@@ -66,9 +66,9 @@ def draw_cat(mood):
 
 def show_log(file_no=0, lines=LOG_DEFAULT_LINES): #สร้างฟังชั่น show_log เก็บพารามิเตอร์ เป็น ชื่อไฟล์ นะที่นี้คือ 0 คือไฟล์เริ่มต้น และจำนวนบรรทัด นะที่นี้คือเริ่มต้น 10 
     if file_no == 0: #ถ้า ชื่อไฟล์ = 0 หรือไม่ได้กรอก ก็คือไปเอา path ตาม log ธรรมดา pcvet.log 
-        path = LOG_FILD
+        path = LOG_FILE
     else: # แต่ถ้าไม่ก็ดู เช่น 1 2 3 ไปเอาค่า .1 .2 .3 ตามค่า log มา
-        path = f"{LOG_FILD}.{file_no}"
+        path = f"{LOG_FILE}.{file_no}"
 
     try:
         with open(path, encoding="utf-8") as f: #อ่านค่าไฟล์ log โดยใช้ encoding utf-8 
@@ -100,14 +100,14 @@ def parse_log_args(args): #สร้างฟังชั่น parse_log_args �
                 raise ValueError(f"do not know: {args[i]}")
             i += 1
 
-        if lines < 1:
-            raise ValueError("Number of lines must be 1 or greater.")
-        if file_no < 0 or file_no > LOG_BACKUP_COUNT:
-            raise ValueError(f"File number must be between 0 and {LOG_BACKUP_COUNT}")
+    if lines < 1:
+        raise ValueError("Number of lines must be 1 or greater.")
+    if file_no < 0 or file_no > LOG_BACKUP_COUNT:
+        raise ValueError(f"File number must be between 0 and {LOG_BACKUP_COUNT}")
 
-        if lines > LOG_MAX_LINES:
-            lines = LOG_MAX_LINES
-            was_capped = True
+    if lines > LOG_MAX_LINES:
+        lines = LOG_MAX_LINES
+        was_capped = True
 
     return file_no, lines, was_capped #ส่งตัวแปรทั้งสามกลับไปในชุดเดียว 
 
