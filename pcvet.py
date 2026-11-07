@@ -3,17 +3,21 @@ import time #เรียกใช้ ไลเบอรี่ time
 import os #เรียกใช้ ไลเบอรี่ os
 import json #เรียกใช้ ไลเบอรี่ json
 import logging #เรียกใช้ ไลเบอรี่ logging
+from logging.handlers import RotatingFileHandler
 
 REQUIRED_MOODS = {"normal", "sweaty", "fat", "tired", "hungry"} # สร้าง set มาจัดเก็บชื่อของ อารมณ์ที่ต้องมี
 
-logging.basicConfig( #สร้างการตั้งค่าว่าจะจด log อะไรยังๆง
-    filename="pcvet.log", #เก็บไว้ที่ไฟล์ชื่อ pcvet.log
-    level=logging.INFO, #เก็บทุกเลเวลตั้งแต่ INFO ขึ้นไป
-    format="%(asctime)s %(levelname)s %(message)s", #แสดงเป็น เวลา ระดับ และข้อความ
-    encoding="utf-8", #ใช้เป็น UTF-8 ไม่ให้ภาษาไทยเพี้ยน
+handler = RotatingFileHandler( #สร้าง handler ไฟล์ pcvet เก็บค่า log และหมุนไฟล์ให้เองเรื่อยๆ
+    "pcvet.log",
+    maxBytes=500_000, #ไฟล์ละสูงสุด 500KB 
+    backupCount=3, #สร้างสูงสุด 3 ไฟล์
+    encoding="utf-8", #รูปแบบ UTF-8
 )
-logger = logging.getLogger("pcvet") #สร้างตัวแปรชื่อ pcvet เก็บไว้ใน logger
+handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s")) #ตั้ง format ว่าจะเก็บหน้าตาแบบไหนในที่นี้คือ เวลา เลเวล และ ข้อความ
 
+logger = logging.getLogger("pcvet")
+logger.setLevel(logging.INFO) #จดตั้งแต่ INFO ขึ้นไป
+logger.addHandler(handler) #รวมกัน logger เป็นคนจดเหตุการณ์ส่วน handler ก็เขียนไฟล์ให้
 
 def decide_mood(cpu, disk, uptime_hours, ram): #สร้างฟังชั่นชื่อ decid_mood รับค่า พารามิเตอร์ของ cpu disk uptime_hours ram
     if cpu >= 80: #ถ้า cpu ใช้งานมากว่าหรือเท่ากับ 80% ให้เหงื่อออกแทน sweaty
