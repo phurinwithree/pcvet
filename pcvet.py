@@ -7,6 +7,8 @@ from logging.handlers import RotatingFileHandler
 
 REQUIRED_MOODS = {"normal", "sweaty", "fat", "tired", "hungry"} # สร้าง set มาจัดเก็บชื่อของ อารมณ์ที่ต้องมี
 LOG_FILD = "pcvet.log" #สร้างไฟล์คงที่เพื่อให้เวลาเรียกใช้ pcvet.log จะได้แก้ทีเดียว
+LOG_DEFAULT_LINES = 10 #เพดานจำนวน log ที่ผู้ใช้ทำคำสั่งแบบไม่ระบุจำนวนบรรทัด 10 บรรทัด
+LOG_MAX_LINES = 200 #เพดานจำนวน log สูงสุดเมื่อผู้ใช้ระบบจำนวนบรรทัดห้ามเกินนี้ 200 บรรทัด
 
 handler = RotatingFileHandler( #สร้าง handler ไฟล์ pcvet เก็บค่า log และหมุนไฟล์ให้เองเรื่อยๆ
     LOG_FILD,
