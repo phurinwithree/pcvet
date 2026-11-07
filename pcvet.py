@@ -104,7 +104,10 @@ def parse_log_args(args): #สร้างฟังชั่น parse_log_args �
             raise ValueError("Number of lines must be 1 or greater.")
         if file_no < 0 or file_no > LOG_BACKUP_COUNT:
             raise ValueError(f"File number must be between 0 and {LOG_BACKUP_COUNT}")
-                   
+
+        if lines > LOG_MAX_LINES:
+            lines = LOG_MAX_LINES
+            was_capped = True
 
     return file_no, lines, was_capped #ส่งตัวแปรทั้งสามกลับไปในชุดเดียว 
 
