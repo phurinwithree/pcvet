@@ -134,6 +134,25 @@ def run_log_command(args): #สร้างฟังชั่นสำหรั�
     if was_capped:
         print(f"Maximum is {LOG_MAX_LINES} lines")
 
+COMMANDS = { #สร้าง dict เพื่อเก็บชื่อ command กับว่า มีหน้าที่อะไร ชื่อ : ฟังชั่นของมัน
+    "log" : run_log_command
+}
+
+def handler_log(text): #สร้างฟังชั่น พิมพ์ log เอง
+    parts = text.strip().lower().split() #แบ่งคำสั่งได้เป็นพาร์ทๆ ให้ตัดช่องว่างด้านหลัง แปลงเป็นตัวเล็กทั้งหมด และให้เป็น list
+    if not parts: #ถ้าผู้ใช้ไม่ได้พิมพ์อะไร ก็ให้จบฟังชั่นเงียบๆ
+        return
+
+    name = parts[0] #ชื่อแรกที่ได้คือ คำสั่ง
+    args = parts[1:] #ที่เหลือตามมาคือ list
+
+    command = COMMANDS.get(name) #หยิบชื่อ Command ตามชื่อใน dict
+    if command is None: #ถ้าไม่มีชื่อใน dict ก็ให้แสดงว่า ไม่รู้จัก Command และจบฟังชั่น
+        print(f"Unkonw command: {name}")
+        return
+
+    command(args) #ตอนนี้ command คือตัวฟังชั่นเอง
+
 
 logger.info("Program starts running.") #ถ้าผู้ใช้เริ่มโปรแกรมให้จดลง log
 last_mood = None #สร้างตัวแปรมาเพื่อ เก็บค่าของ mood ล่าสุดที่แสดง
