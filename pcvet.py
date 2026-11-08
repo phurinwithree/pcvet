@@ -111,6 +111,30 @@ def parse_log_args(args): #สร้างฟังชั่น parse_log_args �
 
     return file_no, lines, was_capped #ส่งตัวแปรทั้งสามกลับไปในชุดเดียว 
 
+def run_log_command(args): #สร้างฟังชั่นสำหรับแสดงผล log
+    try:
+        file_no, lines, was_capped = parse_log_args(args) #ฟ้องเมื่อผุ้ใช้ พิพม์คำสั่งผิดผลาด
+    except ValueError as e:
+        print(f"Error: {e}")
+        return #รีเทิร์นกลับแบบไม่มีค่าอะไร
+
+    result = show_log(file_no, lines)
+    if result is None:
+        print(f"Log file {file_no} does not exist yet.")
+        return
+    
+    if file_no == 0:
+        print(f"--- Lastest log: last {lines} lines ---")
+    else:
+        print(f"--- Log file .{file_no}: last {lines} lines ---")
+
+    for lines in result:
+        print(lines.rsplit()) #แสดงผล แบบตัดบรรทัดทิ้ง \n
+
+    if was_capped:
+        print(f"Maximum is {LOG_MAX_LINES} lines")
+
+
 logger.info("Program starts running.") #ถ้าผู้ใช้เริ่มโปรแกรมให้จดลง log
 last_mood = None #สร้างตัวแปรมาเพื่อ เก็บค่าของ mood ล่าสุดที่แสดง
 
