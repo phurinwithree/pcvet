@@ -40,8 +40,8 @@ def load_skin(path): #สร้างฟังชั่น load_skin รับ�
         with open(path, encoding="utf-8") as f: #เปิดไฟล์สกินของเรา และให้อ่านด้วย UTF-8 กัน windows เอ๋อ และตั้งชื่อไฟล์ให้เป็น f
             return json.load(f)
     except FileNotFoundError: #ถ้าหาไฟล์สกินไม่เจอก็ให้แสดงข้อความต่อไปนี้และย้อยกลับ None
-        logger.error("Can't found the skin file: %s", path) #ให้ logger เป็นคนเอาค่าไปแทนที่เอง
-        print(f"Can't found the skin file: {path}")
+        logger.error("Can't find the skin file: %s", path) #ให้ logger เป็นคนเอาค่าไปแทนที่เอง
+        print(f"Can't find the skin file: {path}")
         return None
     except json.JSONDecodeError as e: #ถ้ารูปแบบไฟล์ json ผิด ให้เป็น e และแสดงข้อความต่อไปนี้ พร้อมข้อความบอกรายละเอียดและย้อนกลับ None
         logger.error("Skin file is formatted incorrectly: %s (%s)", path, e) #ให้ logger เป็นคนเอาค่าไปแทนที่เอง
@@ -52,7 +52,7 @@ def load_skin(path): #สร้างฟังชั่น load_skin รับ�
 def check_skin(skin):
     missing = REQUIRED_MOODS - set(skin["faces"].keys()) #เช็คด้วยการ แปลงสกินให้เป็นเซตและ เอามาลบกันด้วยเซตที่มีอยู่ถ้าเหลือแสดงว่า อารมณ์ไม่ครบ
     if missing: #ถ้าเซตที่ลบแล้วกลายเป็นเซตว่างให้แสดงข้อความ
-        print(f"Skin this missing mood: {', '.join(sorted(missing))}") #เรียงตามตัวอักษรให้อ่านง่ายและคั่นด้วย ","
+        print(f"Skin is missing mood: {', '.join(sorted(missing))}") #เรียงตามตัวอักษรให้อ่านง่ายและคั่นด้วย ","
         return False
     return True
     #return True False บอกว่าสกินผ่านหรือไม่
@@ -87,7 +87,7 @@ def parse_log_args(args): #สร้างฟังชั่น parse_log_args �
     while i < len(args): #เช็คจำนวนสมาชิกใน args เริ่มจาก 0 1 2 ตามลำดับ
         if args[i] == "--lines": #หยิบคำที่ i ชิ้อยู่แล้วถามว่าคือ --lines ไหม
             if i + 1 >= len(args): #ถามว่าคำถัดไปมีอยู่จริงไหม
-                raise ValueError("--lines Must be followed by a number, for example: --lines 50") #ถ้าผู้ใช้ กรอก --lines abc ให้ฟ้องกลับว่า ต้องกรอกตามหลังด้วยตัวเลขเท่านั้น
+                raise ValueError("--lines must be followed by a number, for example: --lines 50") #ถ้าผู้ใช้ กรอก --lines abc ให้ฟ้องกลับว่า ต้องกรอกตามหลังด้วยตัวเลขเท่านั้น
             try:
                 lines = int(args[i + 1])
             except ValueError:
@@ -97,7 +97,7 @@ def parse_log_args(args): #สร้างฟังชั่น parse_log_args �
             try:
                 file_no = int(args[i])
             except ValueError:
-                raise ValueError(f"do not know: {args[i]}")
+                raise ValueError(f"Unknown argument: {args[i]}")
             i += 1
 
     if lines < 1:
@@ -124,12 +124,12 @@ def run_log_command(args): #สร้างฟังชั่นสำหรั�
         return
     
     if file_no == 0:
-        print(f"--- Lastest log: last {lines} lines ---")
+        print(f"--- Latest log: last {lines} lines ---")
     else:
         print(f"--- Log file .{file_no}: last {lines} lines ---")
 
     for lines in result:
-        print(lines.rsplit()) #แสดงผล แบบตัดบรรทัดทิ้ง \n
+        print(lines.rstrip()) #แสดงผล แบบตัดบรรทัดทิ้ง \n
 
     if was_capped:
         print(f"Maximum is {LOG_MAX_LINES} lines")
@@ -138,7 +138,7 @@ COMMANDS = { #สร้าง dict เพื่อเก็บชื่อ comma
     "log" : run_log_command
 }
 
-def handler_log(text): #สร้างฟังชั่น พิมพ์ log เอง
+def handle_command(text): #สร้างฟังชั่น พิมพ์ log เอง
     parts = text.strip().lower().split() #แบ่งคำสั่งได้เป็นพาร์ทๆ ให้ตัดช่องว่างด้านหลัง แปลงเป็นตัวเล็กทั้งหมด และให้เป็น list
     if not parts: #ถ้าผู้ใช้ไม่ได้พิมพ์อะไร ก็ให้จบฟังชั่นเงียบๆ
         return
@@ -148,7 +148,7 @@ def handler_log(text): #สร้างฟังชั่น พิมพ์ log
 
     command = COMMANDS.get(name) #หยิบชื่อ Command ตามชื่อใน dict
     if command is None: #ถ้าไม่มีชื่อใน dict ก็ให้แสดงว่า ไม่รู้จัก Command และจบฟังชั่น
-        print(f"Unkonw command: {name}")
+        print(f"Unknown command: {name}")
         return
 
     command(args) #ตอนนี้ command คือตัวฟังชั่นเอง
