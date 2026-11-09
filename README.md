@@ -10,7 +10,7 @@
 
 ```
  /\_/\
-(^   ^)   "วันนี้เป็นยังไงบ้าง"
+(^ . ^)   "วันนี้เป็นยังไงบ้าง"
 >  ^  <
 
 ```
@@ -83,7 +83,7 @@ A terminal mascot whose life is tied to the real health of your PC. Just look at
 
 ```
  /\_/\
-(^   ^)   "How are you today?"
+(^ . ^)   "How are you today?"
 >  ^  <
 
 ```
