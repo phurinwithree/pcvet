@@ -68,7 +68,7 @@ def draw_cat(mood):
 def wait_or_key(seconds): #สร้างฟังชั่น wait_or_key เก็บค่าพารามิเตอร์เป็น seconds
     waited = 0 #รอ เริ่มต้นคือ 0
     while waited < seconds: #สร้าง loop ที่จะเช็คเมื่อ waited มากกว่า seconds
-        if msvcrt.kbhit: #เช็คว่าตอนนี้มีการกดปุ่มไหม
+        if msvcrt.kbhit(): #เช็คว่าตอนนี้มีการกดปุ่มไหม
             key = msvcrt.getwch()
             if key == "\x03": #ตรวจจับการกด Ctrl + C ในการจบโปรแกรม
                 raise KeyboardInterrupt
@@ -191,7 +191,13 @@ try:
         print("Mood:", mood) #แสดงผลหน้าตาตามฟังชั่น
         print(draw_cat(mood)) #แสดงผลตัวการ์ตูนของเรา
 
-        time.sleep(3) #สั่งให้โปรแกรมรอ 3 วินาทีในแต่ละรอบ
+        key = wait_or_key(3) #รอผู้ใช้ 3 วินาที
+        if key == "/": #เช็คว่า ปุ่มที่กดคือ / ไหม 
+            print("/", end="") #ถ้าใช่ ให้แสดง / พร้อมกับทำให้ เคอเซอร์ค้างอยู่หลัง / ไม่ย่อหน้าใหม่
+            text = input() #หยุดรอผู้เมื่อกด /
+            handle_command(text) #ส่งกลับไปยัง ฟังชั่น handle_command
+            input("Press Enter to return...") #หยุดรอผู้ใช้อ่านผลก่อน
+
 except KeyboardInterrupt: #ถ้าผู้ใช้เกิด ทำเหตุการณ์ที่ขึ้น KeyboardInterrupt เช่น Ctrl + C จะให้แสดงข้อความ ถ้าไม่ก็เข้า ลูปปกติ
     logger.info("User stops the program.") #ถ้าผู้ใช้หยุดโปรแกรม ให้จดลง log 
     print("See you again ^.^")
