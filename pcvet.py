@@ -3,6 +3,7 @@ import time #เรียกใช้ ไลเบอรี่ time
 import os #เรียกใช้ ไลเบอรี่ os
 import json #เรียกใช้ ไลเบอรี่ json
 import logging #เรียกใช้ ไลเบอรี่ logging
+import msvcrt #เรียกใช้ ไลเบอรี่ msvcrt
 from logging.handlers import RotatingFileHandler
 
 REQUIRED_MOODS = {"normal", "sweaty", "fat", "tired", "hungry"} # สร้าง set มาจัดเก็บชื่อของ อารมณ์ที่ต้องมี
@@ -63,6 +64,18 @@ if skin is None or not check_skin(skin): #ถ้า skin เป็น None โ�
 
 def draw_cat(mood): 
     return "\n".join(skin["faces"][mood]) #หยิบไฟล์สองชั้น คือ หน้าตา และชื่ออารมณ์ และเอาทุกบรรทัดมาต่อกันใหม่ ขึ้นบรรทัดด้วย /n 
+
+def wait_or_key(seconds): #สร้างฟังชั่น wait_or_key เก็บค่าพารามิเตอร์เป็น seconds
+    waited = 0 #รอ เริ่มต้นคือ 0
+    while waited < seconds: #สร้าง loop ที่จะเช็คเมื่อ waited มากกว่า seconds
+        if msvcrt.kbhit: #เช็คว่าตอนนี้มีการกดปุ่มไหม
+            key = msvcrt.getwch()
+            if key == "\x03": #ตรวจจับการกด Ctrl + C ในการจบโปรแกรม
+                raise KeyboardInterrupt
+            return key
+        time.sleep(0.1) #ถ้าไม่มีก็รอสั้น 0.1 วินาที
+        waited += 0.1 #นับว่าเวลาผ่านไปอีกกี่วินาที
+    return None #คืนค่าเป็น none
 
 def show_log(file_no=0, lines=LOG_DEFAULT_LINES): #สร้างฟังชั่น show_log เก็บพารามิเตอร์ เป็น ชื่อไฟล์ นะที่นี้คือ 0 คือไฟล์เริ่มต้น และจำนวนบรรทัด นะที่นี้คือเริ่มต้น 10 
     if file_no == 0: #ถ้า ชื่อไฟล์ = 0 หรือไม่ได้กรอก ก็คือไปเอา path ตาม log ธรรมดา pcvet.log 
